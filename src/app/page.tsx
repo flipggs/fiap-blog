@@ -9,22 +9,30 @@ import { Category, FieldsPageBlogPost } from "~/models/contentful";
 import { Categories } from "~/components/CategoryList/types";
 
 const getImageUrl = (fileUrl: string) => {
- return fileUrl.replace("//", "https://"); 
+  return fileUrl.replace("//", "https://");
 }
 
 export default function Home() {
   const [unfilteredCards, setUnfilteredCads] = useState<CardProps[]>([]);
   const [cards, setCards] = useState<CardProps[]>([]);
-  useEffect(() => {
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const pageSize = 6
+  const [selectedPage, setSelectedPage] = useState<number>(1)
+  const [numberOfPages, setNumberOfPages] = useState<number>(0)
+
+  const getPosts = () => {
     client.getEntries({
-      content_type: 'fiapBlogPost'
+      content_type: 'fiapBlogPost',
+      skip: (selectedPage - 1) * pageSize,
+      limit: pageSize,
+
     }).then(resp => {
       const data = resp.items.map((item) => {
         const post = item as unknown as FieldsPageBlogPost;
         const image = getImageUrl(post.fields.previewPostImage.fields.file.url);
         const avatar = getImageUrl(post.fields.avatarPost.fields.file.url);
         const category = post.fields.postCategory.fields.categoryTitle
-        
+
         return {
           image: image,
           title: post.fields.postTitle,
@@ -33,12 +41,18 @@ export default function Home() {
           category: category
         };
       });
+      const totalNumberOfResults = resp.total
+      const roundedNumberOfPages = Math.ceil(totalNumberOfResults/pageSize)
+      setNumberOfPages(roundedNumberOfPages)
       setCards(data);
       setUnfilteredCads(data);
     }).catch(error => console.error({ error }));
+  }
+
+  useEffect(() => {
+    getPosts()
   }, []);
 
-  const [categories, setCategories] = useState<Categories[]>([]);
   useEffect(() => {
     client.getEntries({
       content_type: 'fiapBlogCategory'
@@ -56,16 +70,21 @@ export default function Home() {
 
   const handleFilterPosts = (categoryTitle: string) => {
 
-    if (categoryTitle == 'reset'){
+    if (categoryTitle == 'reset') {
       setCards(unfilteredCards)
       return
     }
 
-    const filteredCards = unfilteredCards.filter((card)=>{
+    const filteredCards = unfilteredCards.filter((card) => {
       return card.category == categoryTitle
     })
     setCards(filteredCards)
 
+  }
+
+  const handleChangePage = (number: any) => {
+    setSelectedPage(number)
+    getPosts()
   }
 
   return (
@@ -74,7 +93,7 @@ export default function Home() {
         <Cards items={cards} />
         <CategloryList categories={categories} handleFilterPost={handleFilterPosts} />
       </div>
-      <Pagination />
+      <Pagination handleChangePage={handleChangePage} numberOfPages={numberOfPages} />
     </div>
   );
 }

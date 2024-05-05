@@ -6,7 +6,7 @@ export const Card = ({ image, title, avatar, slug }: CardProps) => {
   return (
     <section className="bg-white  p-6 mb-6 shadow transition duration-300 group transform hover:-translate-y-2 hover:shadow-2xl rounded-2xl cursor-pointer border">
       <Link
-        href="/blog/slug"
+        href={`/post/${slug}`}
         className="absolute opacity-0 top-0 right-0 left-0 bottom-0"
       ></Link>
       <div className="relative mb-4 rounded-2xl">

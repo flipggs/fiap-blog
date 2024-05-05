@@ -11,9 +11,7 @@ export const CategloryList = ({categories, handleFilterPost}: ListCategories) =>
       <h3 className="text-xl">Categorias</h3>
       <ul className="flex flex-col gap-2">
         <li>
-          <a>
             <a href={`#`} onClick={()=>handleFilterPost('reset')}>Todos os Posts</a>
-          </a>
         </li>
         {
           categories.map((category) => (
