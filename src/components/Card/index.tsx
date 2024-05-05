@@ -13,7 +13,7 @@ export const Card = ({ image, title, avatar, slug }: CardProps) => {
         <Image src={image} width={262} height={175} alt="image" />
         <Link
           className="flex justify-center items-center bg-red-700 bg-opacity-80 z-10 absolute top-0 left-0 w-full h-full text-white rounded-2xl opacity-0 transition-all duration-300 transform group-hover:scale-105 text-xl group-hover:opacity-100"
-          href={`/slug/${slug}`}
+          href={`/post/${slug}`}
           target="_self"
           rel="noopener noreferrer"
         >
