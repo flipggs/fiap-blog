@@ -3,4 +3,5 @@ export interface CardProps {
   title: string;
   slug: string;
   avatar: string;
+  category: string
 }

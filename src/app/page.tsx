@@ -13,6 +13,7 @@ const getImageUrl = (fileUrl: string) => {
 }
 
 export default function Home() {
+  const [unfilteredCards, setUnfilteredCads] = useState<CardProps[]>([]);
   const [cards, setCards] = useState<CardProps[]>([]);
   useEffect(() => {
     client.getEntries({
@@ -22,16 +23,18 @@ export default function Home() {
         const post = item as unknown as FieldsPageBlogPost;
         const image = getImageUrl(post.fields.previewPostImage.fields.file.url);
         const avatar = getImageUrl(post.fields.avatarPost.fields.file.url);
+        const category = post.fields.postCategory.fields.categoryTitle
         
         return {
           image: image,
           title: post.fields.postTitle,
           slug: post.fields.postSlug,
           avatar: avatar,
+          category: category
         };
       });
-      console.log(data)
       setCards(data);
+      setUnfilteredCads(data);
     }).catch(error => console.error({ error }));
   }, []);
 
@@ -51,11 +54,25 @@ export default function Home() {
     }).catch(error => console.error({ error }));
   }, []);
 
+  const handleFilterPosts = (categoryTitle: string) => {
+
+    if (categoryTitle == 'reset'){
+      setCards(unfilteredCards)
+      return
+    }
+
+    const filteredCards = unfilteredCards.filter((card)=>{
+      return card.category == categoryTitle
+    })
+    setCards(filteredCards)
+
+  }
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-3">
         <Cards items={cards} />
-        <CategloryList categories={categories} />
+        <CategloryList categories={categories} handleFilterPost={handleFilterPosts} />
       </div>
       <Pagination />
     </div>

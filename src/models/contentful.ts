@@ -61,6 +61,10 @@ export interface PostContent {
 export interface PostCategory {
   metadata: Metadata;
   sys: Sys;
+  fields: {
+    categorySlug: string,
+    categoryTitle: string
+  }
 }
 
 export interface FieldsPageBlogPost {
