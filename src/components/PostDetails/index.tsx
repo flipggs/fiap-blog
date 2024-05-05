@@ -17,8 +17,6 @@ export const PostDetail = ({slug}: IPostDetails) => {
       }).then(resp => {
         const data = resp.items.map((item) => {
           const post = item as unknown as FieldsPageBlogPost;
-          const category = post.fields.postCategory.fields.categoryTitle
-
             
             let finalContent: string[] = []
             post.fields.postContent.content.forEach((x) => {
