@@ -2,7 +2,7 @@
 import { Pagination } from "~/components/Pagination";
 import { Cards } from "~/components/Cards";
 import { CategloryList } from "~/components/CategoryList";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import client from "~/utils/contentful";
 import { CardProps } from "~/components/Card/types";
 import { Category, FieldsPageBlogPost } from "~/models/contentful";
@@ -20,10 +20,10 @@ export default function Home() {
   const [selectedPage, setSelectedPage] = useState<number>(1)
   const [numberOfPages, setNumberOfPages] = useState<number>(0)
 
-  const getPosts = () => {
+  const getPosts = useCallback((page: number) => {
     client.getEntries({
       content_type: 'fiapBlogPost',
-      skip: (selectedPage - 1) * pageSize,
+      skip: (page - 1) * pageSize,
       limit: pageSize,
 
     }).then(resp => {
@@ -47,13 +47,11 @@ export default function Home() {
       setCards(data);
       setUnfilteredCads(data);
     }).catch(error => console.error({ error }));
-  }
-
-  useEffect(() => {
-    getPosts()
   }, []);
 
   useEffect(() => {
+    getPosts(1);
+
     client.getEntries({
       content_type: 'fiapBlogCategory'
     }).then(resp => {
@@ -66,7 +64,7 @@ export default function Home() {
       });
       setCategories(data);
     }).catch(error => console.error({ error }));
-  }, []);
+  }, [getPosts]);
 
   const handleFilterPosts = (categoryTitle: string) => {
 
@@ -84,16 +82,15 @@ export default function Home() {
 
   const handleChangePage = (number: any) => {
     setSelectedPage(number)
-    getPosts()
+    getPosts(number)
   }
 
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-3">
-        <Cards items={cards} />
+        <Cards items={cards} currentPage={selectedPage} handleChangePage={handleChangePage} numberOfPages={numberOfPages} />
         <CategloryList categories={categories} handleFilterPost={handleFilterPosts} />
       </div>
-      <Pagination handleChangePage={handleChangePage} numberOfPages={numberOfPages} />
     </div>
   );
 }

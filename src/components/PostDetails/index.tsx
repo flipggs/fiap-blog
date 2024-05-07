@@ -36,7 +36,7 @@ export const PostDetail = ({slug}: IPostDetails) => {
         });
         setPost(data[0]);
       }).catch(error => console.error({ error }));
-    }, []);
+    }, [slug]);
     
     
     return (
